@@ -1,0 +1,15 @@
+import random
+
+pool = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kiko', 'Zarha', 'Selina', 'Tammie']
+num_people = len(pool)
+
+selected_people = []
+
+while len(selected_people) < num_people:
+    selection = random.sample(pool, 2)
+
+    if all(p not in selected_people for p in selection):
+        selected_people.extend(selection)
+        print("Selected people:", ', '.join(selection))
+
+print("All people have been selected once.")
