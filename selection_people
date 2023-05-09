@@ -1,6 +1,6 @@
 import random
 
-pool = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kiko', 'Zarha', 'Selina', 'Tammie']
+pool = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kiko', 'Zahra', 'Selina', 'Tammie']
 num_people = len(pool)
 
 selected_people = []
