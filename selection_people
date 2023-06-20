@@ -1,13 +1,13 @@
 import random
 
-people = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kyriakos', 'Zahra', 'Selina', 'Daniel', 'Fikri']
+people = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kyriakos', 'Zahra', 'Selina', 'Fikri']
 days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
 random.shuffle(people)
 
-lucky_person = random.choice(people)
+lucky_people = random.sample(people, 2)
 
-people.append(lucky_person)
+people.extend(lucky_people)
 
 chores_dict = {}
 
@@ -18,5 +18,4 @@ for i in range(0, len(people), 2):
 for day, people in chores_dict.items():
     print(f'{day}: {people}')
 
-# the lucky person :)
-print("\nThe lucky person who was selected twice is: " + lucky_person + ". Congratulations to you!")
+print("\nThe lucky people who were selected twice are: ", ', '.join(lucky_people), ". Congratulations to you!")
