@@ -1,15 +1,22 @@
 import random
 
-pool = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kiko', 'Zahra', 'Selina', 'Tammie']
-num_people = len(pool)
+people = ['Jiayu', 'Afifah', 'Martin', 'Oliver', 'Kyriakos', 'Zahra', 'Selina', 'Daniel', 'Fikri']
+days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 
-selected_people = []
+random.shuffle(people)
 
-while len(selected_people) < num_people:
-    selection = random.sample(pool, 2)
+lucky_person = random.choice(people)
 
-    if all(p not in selected_people for p in selection):
-        selected_people.extend(selection)
-        print("Selected people:", ', '.join(selection))
+people.append(lucky_person)
 
-print("All people have been selected once.")
+chores_dict = {}
+
+for i in range(0, len(people), 2):
+    day = days[i // 2]
+    chores_dict[day] = ', '.join([people[i], people[i+1]])
+
+for day, people in chores_dict.items():
+    print(f'{day}: {people}')
+
+# the lucky person :)
+print("\nThe lucky person who was selected twice is: " + lucky_person + ". Congratulations to you!")
