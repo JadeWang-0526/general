@@ -1,0 +1,1941 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": {"background": "#efe0ad", "border": "#bfa15e", "highlight": {"background": "#efe0ad", "border": "#bfa15e"}, "hover": {"background": "#efe0ad", "border": "#bfa15e"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": false, "id": "Q4_part_id", "label": "6: part_id [txt]", "level": 2, "shape": "ellipse", "title": "text\n What is your participant ID?\n entities: participant_id [create_if: ${consent}=\"yes\"]", "x": -594.0, "y": -392.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": false, "id": "Q5_text1_page1", "label": "7: text1_page1 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 1 on page 1?", "x": -594.0, "y": -275.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": false, "id": "Q7_consent", "label": "9: consent [s1]\n--------------------\n\u2022 yes\n\u2022 no", "level": 2, "margin": 10, "shape": "box", "title": "select_one consent_select\n Do you consent to join the clinical trial?", "widthConstraint": {"maximum": 360}, "x": -594.0, "y": -130.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q11_dob", "label": "13: dob [s1]\n--------------------\n\u2022 date\n\u2022 month\n\u2022 year\n\u2022 none", "level": 2, "margin": 10, "shape": "box", "title": "select_one dob_select\n Do you know your date of birth?", "widthConstraint": {"maximum": 360}, "x": -375.6, "y": -347.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q12_dob_date", "label": "14: dob_date [date]", "level": 2, "shape": "ellipse", "title": "date\n Please enter your date of birth:\nCondition: dob = \"date\"", "x": -157.20000000000002, "y": -392.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q13_dob_month", "label": "15: dob_month [txt]", "level": 2, "shape": "ellipse", "title": "text\n Please enter your month and year of birth:\nCondition: dob = \"month\"", "x": 109.19999999999999, "y": -392.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q14_dob_year", "label": "16: dob_year [txt]", "level": 2, "shape": "ellipse", "title": "text\n Please enter your year of birth:\nCondition: dob = \"year\"", "x": -157.20000000000002, "y": -275.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q15_participant_or_guardian", "label": "17: participant_or_guardian [s1]\n--------------------------------\n\u2022 participant\n\u2022 guardian", "level": 2, "margin": 10, "shape": "box", "title": "select_one guardian\n Are you the participant or the participant\u0027s guardian?", "widthConstraint": {"maximum": 360}, "x": 109.19999999999999, "y": -248.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q16_phone", "label": "18: phone [txt]", "level": 2, "shape": "ellipse", "title": "text\n Please enter your phone number:", "x": -375.6, "y": -185.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q17_gender", "label": "19: gender [s1]\n--------------------\n\u2022 female\n\u2022 male\n\u2022 other", "level": 2, "margin": 10, "shape": "box", "title": "select_one gender\n What is your gender?", "widthConstraint": {"maximum": 360}, "x": -157.20000000000002, "y": -121.75}, {"color": {"background": "#dcdde6", "border": "#6e6f78", "highlight": {"background": "#dcdde6", "border": "#6e6f78"}, "hover": {"background": "#dcdde6", "border": "#6e6f78"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "C18_gender_dependent", "label": "20: gender_dependent", "level": 2, "shape": "ellipse", "title": "calculate\n expr: if(${gender} = \"female\", 1, 0)\n deps: gender", "x": -97.20000000000002, "y": -261.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q19_selection1", "label": "21: selection1 [s1]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_one selection\n Constraint value 1?", "widthConstraint": {"maximum": 360}, "x": 109.19999999999999, "y": -67.75}, {"color": {"background": "#dcdde6", "border": "#6e6f78", "highlight": {"background": "#dcdde6", "border": "#6e6f78"}, "hover": {"background": "#dcdde6", "border": "#6e6f78"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "C20_gender_dependent1", "label": "22: gender_dependent1", "level": 2, "shape": "ellipse", "title": "calculate\n expr: if(${gender_dependent}= 1, 1, 0)\n deps: gender_dependent", "x": -37.20000000000002, "y": -401.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q21_selection2", "label": "23: selection2 [s1]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_one selection\n Constraint value 2?\nCondition: gender = \"female\"", "widthConstraint": {"maximum": 360}, "x": -375.6, "y": -31.75}, {"color": {"background": "#dcdde6", "border": "#6e6f78", "highlight": {"background": "#dcdde6", "border": "#6e6f78"}, "hover": {"background": "#dcdde6", "border": "#6e6f78"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "C22_incl1", "label": "24: incl1", "level": 2, "shape": "ellipse", "title": "calculate\n expr: if(${selection1} = 0 and ${participant_or_guardian} = \"guardian\", 1, 0)\n deps: participant_or_guardian, selection1", "x": 169.2, "y": -388.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q23_selection3", "label": "25: selection3 [s1]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_one selection\n Constraint value 3?\nCondition: COND: incl1 = \"1\"", "widthConstraint": {"maximum": 360}, "x": -157.20000000000002, "y": 67.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q24_selection4", "label": "26: selection4 [s1]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_one selection\n Constraint value 4?", "widthConstraint": {"maximum": 360}, "x": 109.19999999999999, "y": 121.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q25_long_option", "label": "27: long_option [s1]\n--------------------\n\u2022 1\n\u2022 2\n\u2022 3\n\u2022 4\n\u2022 5\n\u2022 6\n\u2022 7\n\u2022 8\n\u2022 9\n\u2022 10\n......", "level": 2, "margin": 10, "shape": "box", "title": "select_one long_selection\n Constraint value 5?", "widthConstraint": {"maximum": 360}, "x": -375.6, "y": 229.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q26_text1", "label": "28: text1 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 1?", "x": -157.20000000000002, "y": 221.25}, {"color": {"background": "#dcdde6", "border": "#6e6f78", "highlight": {"background": "#dcdde6", "border": "#6e6f78"}, "hover": {"background": "#dcdde6", "border": "#6e6f78"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "C27_text1_dependent", "label": "29: text1_dependent", "level": 2, "shape": "ellipse", "title": "calculate\n expr: if(${text1} != \"\", 1, 0)\n deps: text1", "x": -97.20000000000002, "y": 81.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q28_text2", "label": "30: text2 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 2?\nCondition: selected(selection3, \"0\")", "x": 109.19999999999999, "y": 275.25}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q29_text3", "label": "31: text3 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 3?", "x": -157.20000000000002, "y": 338.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q30_text4", "label": "32: text4 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 4?", "x": 109.19999999999999, "y": 392.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q33_symptom1", "label": "35: symptom1 [s1]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_one symptom\n Symptom selection1?\nCondition: text1_dependent = \"1\"", "widthConstraint": {"maximum": 360}, "x": 375.5999999999999, "y": -356.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q34_symptom2", "label": "36: symptom2 [s*]\n--------------------\n\u2022 0\n\u2022 1\n\u2022 2", "level": 2, "margin": 10, "shape": "box", "title": "select_multiple symptom\n Symptom selection2?", "widthConstraint": {"maximum": 360}, "x": 375.5999999999999, "y": -167.25}, {"color": {"background": "#dcdde6", "border": "#6e6f78", "highlight": {"background": "#dcdde6", "border": "#6e6f78"}, "hover": {"background": "#dcdde6", "border": "#6e6f78"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "C35_eligible_page4", "label": "37: eligible_page4", "level": 2, "shape": "ellipse", "title": "calculate\n expr: if(${gender_dependent1}=1 and ${text1_dependent}=1, 1, 0)\n deps: gender_dependent1, text1_dependent", "x": 22.799999999999983, "y": -541.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "face": "Inter", "multi": true, "size": 14}, "hidden": true, "id": "Q38_likert", "label": "40: likert [s1]\n--------------------\n\u2022 disagree\n\u2022 neutral\n\u2022 agree", "level": 2, "margin": 10, "shape": "box", "title": "select_one likert_widget\n Likert Widget", "widthConstraint": {"maximum": 360}, "x": 593.9999999999999, "y": -356.75}, {"color": {"background": "#bccf78", "border": "#9dad5d", "highlight": {"background": "#bccf78", "border": "#9dad5d"}, "hover": {"background": "#bccf78", "border": "#9dad5d"}}, "fixed": {"x": true, "y": true}, "font": {"color": "#3b3b3b", "face": "Inter", "size": 14}, "hidden": true, "id": "Q39_text5", "label": "41: text5 [txt]", "level": 2, "shape": "ellipse", "title": "text\n Text message 5?\nCondition: selected(likert, \"agree\")", "x": 593.9999999999999, "y": -203.25}, {"color": {"background": "#b7cfd6", "border": "#7c9da7", "highlight": {"background": "#b7cfd6", "border": "#7c9da7"}, "hover": {"background": "#b7cfd6", "border": "#7c9da7"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "multi": true, "size": 11}, "hidden": false, "id": "H_G3_page_1", "label": "5: page_1 [field-list]", "physics": false, "shape": "box", "size": 12, "title": "field-list\n name=page_1", "x": -674.0, "y": -443.55}, {"color": {"background": "#b7cfd6", "border": "#7c9da7", "highlight": {"background": "#b7cfd6", "border": "#7c9da7"}, "hover": {"background": "#b7cfd6", "border": "#7c9da7"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "multi": true, "size": 11}, "hidden": false, "id": "H_G10_page_2", "label": "12: page_2 [field-list]", "physics": false, "shape": "box", "size": 12, "title": "field-list\n name=page_2\nCondition: consent = \"yes\"", "x": -455.6, "y": -443.55}, {"color": {"background": "#b7cfd6", "border": "#7c9da7", "highlight": {"background": "#b7cfd6", "border": "#7c9da7"}, "hover": {"background": "#b7cfd6", "border": "#7c9da7"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "multi": true, "size": 11}, "hidden": false, "id": "H_G32_page_3", "label": "34: page_3 [field-list]", "physics": false, "shape": "box", "size": 12, "title": "field-list\n name=page_3\nCondition: gender_dependent1 = \"1\"", "x": 295.5999999999999, "y": -443.55}, {"color": {"background": "#b7cfd6", "border": "#7c9da7", "highlight": {"background": "#b7cfd6", "border": "#7c9da7"}, "hover": {"background": "#b7cfd6", "border": "#7c9da7"}}, "fixed": {"x": true, "y": true}, "font": {"align": "left", "color": "#3b3b3b", "multi": true, "size": 11}, "hidden": false, "id": "H_G37_page_4", "label": "39: page_4 [repeat]", "physics": false, "shape": "box", "size": 12, "title": "repeat\n name=page_4\nCondition: COND: eligible_page4 = \"1\"", "x": 513.9999999999999, "y": -443.55}]);
+                  edges = new vis.DataSet([{"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q4_part_id", "hidden": true, "physics": false, "smooth": false, "to": "Q5_text1_page1"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q5_text1_page1", "hidden": true, "physics": false, "smooth": false, "to": "Q7_consent"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q11_dob", "hidden": true, "physics": false, "smooth": false, "to": "Q12_dob_date"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q12_dob_date", "hidden": true, "physics": false, "smooth": false, "to": "Q13_dob_month"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q13_dob_month", "hidden": true, "physics": false, "smooth": false, "to": "Q14_dob_year"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q14_dob_year", "hidden": true, "physics": false, "smooth": false, "to": "Q15_participant_or_guardian"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q15_participant_or_guardian", "hidden": true, "physics": false, "smooth": false, "to": "Q16_phone"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q16_phone", "hidden": true, "physics": false, "smooth": false, "to": "Q17_gender"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q17_gender", "hidden": true, "physics": false, "smooth": false, "to": "Q19_selection1"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q19_selection1", "hidden": true, "physics": false, "smooth": false, "to": "Q21_selection2"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q21_selection2", "hidden": true, "physics": false, "smooth": false, "to": "Q23_selection3"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q23_selection3", "hidden": true, "physics": false, "smooth": false, "to": "Q24_selection4"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q24_selection4", "hidden": true, "physics": false, "smooth": false, "to": "Q25_long_option"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q25_long_option", "hidden": true, "physics": false, "smooth": false, "to": "Q26_text1"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q26_text1", "hidden": true, "physics": false, "smooth": false, "to": "Q28_text2"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q28_text2", "hidden": true, "physics": false, "smooth": false, "to": "Q29_text3"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q29_text3", "hidden": true, "physics": false, "smooth": false, "to": "Q30_text4"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q30_text4", "hidden": true, "physics": false, "smooth": false, "to": "C18_gender_dependent"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "C18_gender_dependent", "hidden": true, "physics": false, "smooth": false, "to": "C20_gender_dependent1"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "C20_gender_dependent1", "hidden": true, "physics": false, "smooth": false, "to": "C22_incl1"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "C22_incl1", "hidden": true, "physics": false, "smooth": false, "to": "C27_text1_dependent"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q33_symptom1", "hidden": true, "physics": false, "smooth": false, "to": "Q34_symptom2"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q34_symptom2", "hidden": true, "physics": false, "smooth": false, "to": "C35_eligible_page4"}, {"arrows": {"to": {"enabled": false}}, "data_kind": "sibling_guide", "from": "Q38_likert", "hidden": true, "physics": false, "smooth": false, "to": "Q39_text5"}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q4_part_id", "id": "flow_1", "physics": false, "smooth": false, "to": "Q5_text1_page1", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q5_text1_page1", "id": "flow_2", "physics": false, "smooth": false, "to": "Q7_consent", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q7_consent", "id": "flow_3", "physics": false, "smooth": false, "to": "Q11_dob", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q11_dob", "id": "flow_4", "physics": false, "smooth": false, "to": "Q12_dob_date", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q11_dob", "id": "flow_5", "physics": false, "smooth": false, "to": "Q13_dob_month", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q11_dob", "id": "flow_6", "physics": false, "smooth": false, "to": "Q14_dob_year", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q12_dob_date", "id": "flow_7", "physics": false, "smooth": false, "to": "Q15_participant_or_guardian", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q13_dob_month", "id": "flow_8", "physics": false, "smooth": false, "to": "Q15_participant_or_guardian", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q14_dob_year", "id": "flow_9", "physics": false, "smooth": false, "to": "Q15_participant_or_guardian", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q15_participant_or_guardian", "id": "flow_10", "physics": false, "smooth": false, "to": "Q16_phone", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q16_phone", "id": "flow_11", "physics": false, "smooth": false, "to": "Q17_gender", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q17_gender", "id": "flow_12", "physics": false, "smooth": false, "to": "Q19_selection1", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q19_selection1", "id": "flow_13", "physics": false, "smooth": false, "to": "Q21_selection2", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q19_selection1", "id": "flow_14", "physics": false, "smooth": false, "to": "Q23_selection3", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q21_selection2", "id": "flow_15", "physics": false, "smooth": false, "to": "Q23_selection3", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q23_selection3", "id": "flow_16", "physics": false, "smooth": false, "to": "Q24_selection4", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q24_selection4", "id": "flow_17", "physics": false, "smooth": false, "to": "Q25_long_option", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q25_long_option", "id": "flow_18", "physics": false, "smooth": false, "to": "Q26_text1", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q26_text1", "id": "flow_19", "physics": false, "smooth": false, "to": "Q28_text2", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q28_text2", "id": "flow_20", "physics": false, "smooth": false, "to": "Q29_text3", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q29_text3", "id": "flow_21", "physics": false, "smooth": false, "to": "Q30_text4", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q30_text4", "id": "flow_22", "physics": false, "smooth": false, "to": "Q33_symptom1", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q33_symptom1", "id": "flow_23", "physics": false, "smooth": false, "to": "Q34_symptom2", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q34_symptom2", "id": "flow_24", "physics": false, "smooth": false, "to": "Q38_likert", "width": 2.6}, {"arrows": {"to": {"enabled": true}}, "color": {"color": "#7e8ca6", "highlight": "#374151", "hover": "#374151"}, "dashes": false, "data_kind": "flow", "from": "Q38_likert", "id": "flow_25", "physics": false, "smooth": false, "to": "Q39_text5", "width": 2.6}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_1", "label": "", "selectionWidth": 0.8, "to": "H_G10_page_2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q11_dob", "hoverWidth": 0.8, "id": "logic_2", "label": "", "selectionWidth": 0.8, "to": "Q12_dob_date", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q11_dob", "hoverWidth": 0.8, "id": "logic_3", "label": "", "selectionWidth": 0.8, "to": "Q13_dob_month", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q11_dob", "hoverWidth": 0.8, "id": "logic_4", "label": "", "selectionWidth": 0.8, "to": "Q14_dob_year", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_5", "label": "", "selectionWidth": 0.8, "to": "Q21_selection2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q19_selection1", "hoverWidth": 0.8, "id": "logic_6", "label": "", "selectionWidth": 0.8, "to": "Q23_selection3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q15_participant_or_guardian", "hoverWidth": 0.8, "id": "logic_7", "label": "", "selectionWidth": 0.8, "to": "Q23_selection3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q23_selection3", "hoverWidth": 0.8, "id": "logic_8", "label": "", "selectionWidth": 0.8, "to": "Q28_text2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_9", "label": "", "selectionWidth": 0.8, "to": "H_G32_page_3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q26_text1", "hoverWidth": 0.8, "id": "logic_10", "label": "", "selectionWidth": 0.8, "to": "Q33_symptom1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q26_text1", "hoverWidth": 0.8, "id": "logic_11", "label": "", "selectionWidth": 0.8, "to": "H_G37_page_4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_12", "label": "", "selectionWidth": 0.8, "to": "H_G37_page_4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q38_likert", "hoverWidth": 0.8, "id": "logic_13", "label": "", "selectionWidth": 0.8, "to": "Q39_text5", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_14", "label": "", "selectionWidth": 0.8, "to": "C18_gender_dependent", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C18_gender_dependent", "hoverWidth": 0.8, "id": "logic_15", "label": "", "selectionWidth": 0.8, "to": "C20_gender_dependent1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q15_participant_or_guardian", "hoverWidth": 0.8, "id": "logic_16", "label": "", "selectionWidth": 0.8, "to": "C22_incl1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q19_selection1", "hoverWidth": 0.8, "id": "logic_17", "label": "", "selectionWidth": 0.8, "to": "C22_incl1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q26_text1", "hoverWidth": 0.8, "id": "logic_18", "label": "", "selectionWidth": 0.8, "to": "C27_text1_dependent", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C20_gender_dependent1", "hoverWidth": 0.8, "id": "logic_19", "label": "", "selectionWidth": 0.8, "to": "C35_eligible_page4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C27_text1_dependent", "hoverWidth": 0.8, "id": "logic_20", "label": "", "selectionWidth": 0.8, "to": "C35_eligible_page4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C22_incl1", "hoverWidth": 0.8, "id": "logic_21", "label": "", "selectionWidth": 0.8, "to": "Q23_selection3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C20_gender_dependent1", "hoverWidth": 0.8, "id": "logic_22", "label": "", "selectionWidth": 0.8, "to": "H_G32_page_3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C27_text1_dependent", "hoverWidth": 0.8, "id": "logic_23", "label": "", "selectionWidth": 0.8, "to": "Q33_symptom1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "C35_eligible_page4", "hoverWidth": 0.8, "id": "logic_24", "label": "", "selectionWidth": 0.8, "to": "H_G37_page_4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_25", "label": "", "selectionWidth": 0.8, "to": "Q11_dob", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_26", "label": "", "selectionWidth": 0.8, "to": "Q12_dob_date", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_27", "label": "", "selectionWidth": 0.8, "to": "Q13_dob_month", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_28", "label": "", "selectionWidth": 0.8, "to": "Q14_dob_year", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_29", "label": "", "selectionWidth": 0.8, "to": "Q15_participant_or_guardian", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_30", "label": "", "selectionWidth": 0.8, "to": "Q16_phone", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_31", "label": "", "selectionWidth": 0.8, "to": "Q17_gender", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_32", "label": "", "selectionWidth": 0.8, "to": "C18_gender_dependent", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_33", "label": "", "selectionWidth": 0.8, "to": "Q19_selection1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_34", "label": "", "selectionWidth": 0.8, "to": "C20_gender_dependent1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_35", "label": "", "selectionWidth": 0.8, "to": "Q21_selection2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_36", "label": "", "selectionWidth": 0.8, "to": "C22_incl1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_37", "label": "", "selectionWidth": 0.8, "to": "Q23_selection3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_38", "label": "", "selectionWidth": 0.8, "to": "Q24_selection4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_39", "label": "", "selectionWidth": 0.8, "to": "Q25_long_option", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_40", "label": "", "selectionWidth": 0.8, "to": "Q26_text1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_41", "label": "", "selectionWidth": 0.8, "to": "C27_text1_dependent", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_42", "label": "", "selectionWidth": 0.8, "to": "Q28_text2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_43", "label": "", "selectionWidth": 0.8, "to": "Q29_text3", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q7_consent", "hoverWidth": 0.8, "id": "logic_44", "label": "", "selectionWidth": 0.8, "to": "Q30_text4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_45", "label": "", "selectionWidth": 0.8, "to": "Q33_symptom1", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_46", "label": "", "selectionWidth": 0.8, "to": "Q34_symptom2", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_47", "label": "", "selectionWidth": 0.8, "to": "C35_eligible_page4", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q26_text1", "hoverWidth": 0.8, "id": "logic_48", "label": "", "selectionWidth": 0.8, "to": "Q38_likert", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_49", "label": "", "selectionWidth": 0.8, "to": "Q38_likert", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q26_text1", "hoverWidth": 0.8, "id": "logic_50", "label": "", "selectionWidth": 0.8, "to": "Q39_text5", "width": 1.4}, {"arrows": "to", "color": {"color": "#9dad5d", "highlight": "#6b8e23", "hover": "#6b8e23"}, "dashes": true, "data_kind": "logic", "font": {"align": "middle"}, "from": "Q17_gender", "hoverWidth": 0.8, "id": "logic_51", "label": "", "selectionWidth": 0.8, "to": "Q39_text5", "width": 1.4}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"layout": {"improvedLayout": true}, "physics": {"enabled": true, "solver": "barnesHut", "barnesHut": {"gravitationalConstant": -8000, "centralGravity": 0.3, "springLength": 550.0, "springConstant": 0.02, "damping": 0.09, "avoidOverlap": 0}, "stabilization": {"enabled": true, "iterations": 100}, "centralGravity": 0.5, "avoidOverlap": 1.0, "repulsion": {"nodeDistance": 770.0}, "hierarchicalRepulsion": {"nodeDistance": 770.0}}, "interaction": {"hover": true, "multiselect": true, "dragNodes": true, "dragView": true, "navigationButtons": true, "keyboard": {"enabled": true, "bindToWindow": true}}, "edges": {"smooth": false, "arrows": {"to": {"enabled": true}}}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+<script>
+(function() {
+  if (typeof nodes === 'undefined' || typeof edges === 'undefined' || typeof network === 'undefined') return;
+
+  const displayModeDefault = "all"; // "progressive" or "all"
+  let currentMode = displayModeDefault === "all" ? "all" : "progressive";
+
+  const layoutCacheKey = "pyvis_layout_box_v21::/home/wangji/xlsform_visualise/xlsx_forms/enrollment_and_screening_box.html::4::2200.0x333.5";
+
+  function loadSavedLayout(key) {
+    try {
+      const raw = window.localStorage ? localStorage.getItem(key) : null;
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function idsMatch(layout, idsNow) {
+    if (!layout || !Array.isArray(layout.nodeIds)) return false;
+    if (!Array.isArray(idsNow)) return false;
+    const a = layout.nodeIds.slice().sort();
+    const b = idsNow.slice().sort();
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  }
+
+  function applySavedLayout(layout) {
+    if (!layout || !layout.positions) return false;
+    const updates = [];
+    nodes.forEach(function(n) {
+      const pos = layout.positions[n.id];
+      if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
+        const update = { id: n.id, x: pos.x, y: pos.y, fixed: { x: true, y: true } };
+        if (n.hidden !== undefined) update.hidden = n.hidden;
+        updates.push(update);
+      }
+    });
+    if (!updates.length) return false;
+    nodes.update(updates);
+    network.setOptions({ physics: false });
+    if (network.stopSimulation) network.stopSimulation();
+    network.redraw();
+    return true;
+  }
+
+  function captureLayoutToCache(key) {
+    if (!window.localStorage) return;
+    const ids = nodes.getIds ? nodes.getIds() : [];
+    const payload = {
+      nodeIds: ids.slice(),
+      positions: network.getPositions(ids)
+    };
+    try {
+      localStorage.setItem(key, JSON.stringify(payload));
+    } catch (e) {
+      // ignore storage errors (quota, private mode, etc.)
+    }
+  }
+
+  const currentNodeIds = nodes.getIds ? nodes.getIds() : [];
+  const savedLayout = loadSavedLayout(layoutCacheKey);
+  const canReuseLayout = idsMatch(savedLayout, currentNodeIds) && applySavedLayout(savedLayout);
+
+  const childrenMap = new Map();
+  const parentMap   = new Map();
+  edges.forEach(function(e) {
+    if (e && e.from != null && e.to != null && e.data_kind === 'struct') {
+      if (!childrenMap.has(e.from)) childrenMap.set(e.from, []);
+      childrenMap.get(e.from).push(e.to);
+      parentMap.set(e.to, e.from);
+    }
+  });
+
+  const prereqMap = new Map();
+  const dependentsMap = new Map();
+  edges.forEach(function(e) {
+    if (e && e.from != null && e.to != null && (e.data_kind === 'logic' || e.data_kind === 'exit')) {
+      if (!prereqMap.has(e.to)) prereqMap.set(e.to, []);
+      prereqMap.get(e.to).push(e.from);
+      if (!dependentsMap.has(e.from)) dependentsMap.set(e.from, []);
+      dependentsMap.get(e.from).push(e.to);
+    }
+  });
+  const logicEdgeIds = [];
+  edges.forEach(function(e) {
+    if (e && e.data_kind === 'logic' && e.id != null) {
+      logicEdgeIds.push(e.id);
+    }
+  });
+
+  function childrenOf(id) { return (childrenMap.get(id) || []).slice(); }
+  function prereqsOf(id)  { return (prereqMap.get(id)  || []).slice(); }
+  function dependentsOf(id) { return (dependentsMap.get(id) || []).slice(); }
+
+  // Use a neutral dim color that keeps contrast with the colored palette.
+  const DIM_COLOR = { background: "#e6e7eb", border: "#c7c9d1" };
+  const DIM_FONT_COLOR = "rgba(0,0,0,0.55)";
+  const BASE_FONT_COLOR_FALLBACK = "#000000";
+
+  const originalColors = new Map();
+  const originalFontColors = new Map();
+  const initialHidden = new Map();
+  let progressiveHiddenSnapshot = null;
+  let lastHighlightNodes = [];
+  nodes.forEach(function(n) {
+    originalColors.set(n.id, n.color);
+    if (typeof n.font === "object" && n.font && n.font.color) {
+      originalFontColors.set(n.id, n.font.color);
+    } else {
+      originalFontColors.set(n.id, BASE_FONT_COLOR_FALLBACK);
+    }
+    initialHidden.set(n.id, !!n.hidden);
+  });
+
+  // Stronger contrast when selected: thicker borders and edges/arrows
+  network.setOptions({
+    nodes: { borderWidth: 1, borderWidthSelected: 4 },
+    edges: { width: 1, selectionWidth: 4 }
+  });
+
+  function isVisibleNode(id) {
+    const item = nodes.get(id);
+    return !!(item && item.hidden !== true);
+  }
+
+  function captureHiddenState() {
+    const map = new Map();
+    nodes.forEach(function(n) { map.set(n.id, !!n.hidden); });
+    return map;
+  }
+
+  function applyDisplayMode(mode, force) {
+    if (!force && mode === currentMode) return;
+
+    if (currentMode === "progressive" && mode === "all") {
+      progressiveHiddenSnapshot = captureHiddenState();
+    }
+
+    const targetHidden = (mode === "progressive" && progressiveHiddenSnapshot) ? progressiveHiddenSnapshot : initialHidden;
+
+    currentMode = mode;
+    const updates = [];
+    nodes.forEach(function(n) {
+      const desiredHidden = mode === "all" ? false : (targetHidden.get(n.id) || false);
+      if (n.hidden !== desiredHidden) {
+        updates.push({ id: n.id, hidden: desiredHidden });
+      }
+    });
+    if (updates.length) nodes.update(updates);
+  }
+
+  function allPrereqsVisible(id) {
+    const reqs = prereqsOf(id);
+    if (!reqs.length) return true;
+    for (let src of reqs) {
+      const item = nodes.get(src);
+      if (!item || item.hidden) return false;
+    }
+    return true;
+  }
+
+  function reveal(ids) {
+    const updates = [];
+    for (let id of ids) {
+      const item = nodes.get(id);
+      if (item && item.hidden) updates.push({id, hidden:false});
+    }
+    if (updates.length) nodes.update(updates);
+  }
+
+  function revealEligibleChildrenOf(id) {
+    const kids = childrenOf(id);
+    const eligible = [];
+    for (let c of kids) {
+      if (typeof c === 'string' && c.startsWith('C')) continue; // skip calc nodes
+      if (allPrereqsVisible(c)) eligible.push(c);
+    }
+    reveal(eligible);
+  }
+
+  function revealEligibleDependentsOf(id) {
+    const outs = (dependentsMap.get(id) || []).slice();
+    const eligible = [];
+    for (let t of outs) {
+      if (typeof t === 'string' && t.startsWith('C')) continue; // skip calc nodes
+      const p = parentMap.get(t);
+      const pItem = p ? nodes.get(p) : null;
+      const parentVisible = !p || (pItem && !pItem.hidden);
+      if (parentVisible && allPrereqsVisible(t)) eligible.push(t);
+    }
+    reveal(eligible);
+  }
+
+  function descendantsOf(id) {
+    const seen = new Set();
+    const stack = childrenOf(id);
+    while (stack.length) {
+      const curr = stack.pop();
+      if (seen.has(curr)) continue;
+      if (!isVisibleNode(curr)) continue;
+      seen.add(curr);
+      const kids = childrenOf(curr);
+      for (let k of kids) stack.push(k);
+    }
+    return Array.from(seen);
+  }
+
+  function collapseAllDescendants(id) {
+    const desc = descendantsOf(id);
+    if (desc.length) nodes.update(desc.map(d => ({id: d, hidden: true})));
+  }
+
+  function ancestorsOf(id) {
+    const s = new Set();
+    let p = parentMap.get(id);
+    while (p) {
+      s.add(p);
+      p = parentMap.get(p);
+    }
+    return s;
+  }
+
+  function relatedVisibleSet(id) {
+    // Limit highlight to: the node, its visible descendants, immediate parent, and logic links.
+    if (!id) return new Set();
+    const related = new Set([id]);
+    const parent = parentMap.get(id);
+    if (parent) related.add(parent);
+    prereqsOf(id).forEach(x => related.add(x));      // dashed-edge sources
+    dependentsOf(id).forEach(x => related.add(x));   // dashed-edge targets (optional)
+    descendantsOf(id).forEach(x => related.add(x));
+    return related;
+  }
+
+  function applyDimming(focusIds) {
+    const focusSet = new Set(focusIds || []);
+    const hasFocus = focusSet.size > 0;
+    const selectedSet = new Set(network.getSelectedNodes ? network.getSelectedNodes() : []);
+    const updates = [];
+
+    nodes.forEach(function(item) {
+      const baseColor = originalColors.get(item.id) ?? item.color;
+      const shouldDim = hasFocus && !focusSet.has(item.id) && !selectedSet.has(item.id) && isVisibleNode(item.id);
+      const targetColor = shouldDim ? DIM_COLOR : baseColor;
+
+      const fontObj = (typeof item.font === "object" && item.font) ? item.font : {};
+      const currentFontColor = fontObj.color || null;
+      const baseFontColor = originalFontColors.get(item.id) ?? BASE_FONT_COLOR_FALLBACK;
+      const targetFontColor = shouldDim ? DIM_FONT_COLOR : baseFontColor;
+
+      let colorSame = false;
+      if (typeof item.color === "object" && typeof targetColor === "object") {
+        colorSame = item.color.background === targetColor.background &&
+                    item.color.border === targetColor.border;
+      } else {
+        colorSame = item.color === targetColor;
+      }
+
+      const fontSame = currentFontColor === targetFontColor;
+
+      if (!colorSame || !fontSame) {
+        const update = { id: item.id };
+        if (!colorSame) update.color = targetColor;
+        if (!fontSame) {
+          const newFont = Object.assign({}, fontObj);
+          if (targetFontColor) newFont.color = targetFontColor;
+          else delete newFont.color;
+          update.font = newFont;
+        }
+        updates.push(update);
+      }
+    });
+
+    // Always restore base colors for selected/focus nodes to avoid accidental dimming.
+    const keepSet = new Set([...focusSet, ...selectedSet]);
+    keepSet.forEach(function(id) {
+      const item = nodes.get(id);
+      if (!item) return;
+      const baseColor = originalColors.get(id) ?? item.color;
+      const fontObj = (typeof item.font === "object" && item.font) ? item.font : {};
+      const baseFontColor = originalFontColors.get(id) ?? BASE_FONT_COLOR_FALLBACK;
+      updates.push({
+        id,
+        color: baseColor,
+        font: Object.assign({}, fontObj, { color: baseFontColor })
+      });
+    });
+
+    lastHighlightNodes = hasFocus ? Array.from(focusSet) : [];
+    if (updates.length) nodes.update(updates);
+  }
+
+  function ensureNodeVisible(id) {
+    if (!id) return false;
+    const updates = [];
+
+    // Reveal the target and its ancestors.
+    let curr = id;
+    const seenAnc = new Set();
+    while (curr && !seenAnc.has(curr)) {
+      seenAnc.add(curr);
+      const item = nodes.get(curr);
+      if (item && item.hidden === true) {
+        updates.push({ id: curr, hidden: false });
+      }
+      curr = parentMap.get(curr);
+    }
+
+    // Reveal prerequisite nodes (logic sources) for context — skip calc nodes.
+    prereqsOf(id).forEach(function(src) {
+      if (typeof src === 'string' && src.startsWith('C')) return;
+      const srcItem = nodes.get(src);
+      if (srcItem && srcItem.hidden === true) {
+        updates.push({ id: src, hidden: false });
+      }
+    });
+
+    if (updates.length) nodes.update(updates);
+    return true;
+  }
+
+  function activateNode(id, fromButton) {
+    if (!id) return;
+    ensureNodeVisible(id);
+    if (fromButton && network.selectNodes) {
+      network.selectNodes([id]);
+    }
+
+    if (currentMode === "all") {
+      network.focus(id, { scale: 0.9, animation: true });
+      const highlight = relatedVisibleSet(id);
+      applyDimming(highlight);
+      return;
+    }
+
+    const kids = childrenOf(id);
+    if (!kids.length) {
+      revealEligibleDependentsOf(id);
+      return;
+    }
+
+    const anyHidden = kids.some(c => {
+      const item = nodes.get(c);
+      return item && item.hidden === true;
+    });
+
+    if (anyHidden) {
+      revealEligibleChildrenOf(id);
+      revealEligibleDependentsOf(id);
+    } else {
+      collapseAllDescendants(id);
+    }
+
+    network.focus(id, { scale: 0.9, animation: true });
+
+    const highlight = relatedVisibleSet(id);
+    applyDimming(highlight);
+  }
+
+  network.on("click", function(params) {
+    if (!params.nodes || params.nodes.length !== 1) return;
+    const id = params.nodes[0];
+    activateNode(id, false);
+  });
+
+  network.once("afterDrawing", function () {
+    network.fit({ animation: true });
+    applyDisplayMode(displayModeDefault, true);
+
+    const panel = document.createElement('div');
+    panel.style.position = 'absolute';
+    panel.style.top = '10px';
+    panel.style.right = '10px';
+    panel.style.background = 'rgba(255,255,255,0.55)';
+    panel.style.border = '1px solid #ccc';
+    panel.style.borderRadius = '6px';
+    panel.style.padding = '8px';
+    panel.style.boxShadow = '0 2px 6px rgba(0,0,0,0.12)';
+    panel.style.fontFamily = 'Inter, Arial, sans-serif';
+    panel.style.fontSize = '13px';
+    panel.style.zIndex = '999';
+
+    const label = document.createElement('div');
+    label.textContent = 'Display mode:';
+    label.style.marginBottom = '4px';
+    label.style.fontWeight = '600';
+
+    const select = document.createElement('select');
+    select.innerHTML = `
+      <option value="progressive">Progressive (click to reveal)</option>
+      <option value="all">All nodes visible</option>
+    `;
+    select.value = currentMode;
+    select.style.display = 'block';
+    select.style.marginBottom = '6px';
+    select.onchange = function() {
+      const mode = select.value;
+      applyDisplayMode(mode);
+      const selected = network.getSelectedNodes()[0];
+      const highlight = relatedVisibleSet(selected);
+      applyDimming(highlight);
+    };
+
+    panel.appendChild(label);
+    panel.appendChild(select);
+
+    const searchLabel = document.createElement('div');
+    searchLabel.textContent = 'Find node:';
+    searchLabel.style.margin = '6px 0 4px 0';
+    searchLabel.style.fontWeight = '600';
+    panel.appendChild(searchLabel);
+
+    // Multi-match cycling state
+    let searchMatches = [];
+    let searchCursor = -1;
+    let lastSearchQuery = '';
+
+    const searchRow = document.createElement('div');
+    searchRow.style.display = 'grid';
+    searchRow.style.gridTemplateColumns = '1fr auto';
+    searchRow.style.columnGap = '6px';
+    searchRow.style.marginBottom = '4px';
+
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Name, label, id...';
+    searchInput.style.padding = '4px 6px';
+    searchInput.style.border = '1px solid #ccc';
+    searchInput.style.borderRadius = '4px';
+    searchInput.style.fontSize = '12px';
+
+    const searchBtn = document.createElement('button');
+    searchBtn.textContent = 'Find';
+    searchBtn.style.padding = '4px 8px';
+    searchBtn.style.fontSize = '12px';
+    searchBtn.style.border = '1px solid #ccc';
+    searchBtn.style.borderRadius = '4px';
+    searchBtn.style.background = '#f9f9f9';
+    searchBtn.style.cursor = 'pointer';
+
+    // Navigation row: counter + Next button (hidden until a search runs)
+    const navRow = document.createElement('div');
+    navRow.style.display = 'none';
+    navRow.style.gridTemplateColumns = '1fr auto';
+    navRow.style.columnGap = '6px';
+    navRow.style.marginBottom = '6px';
+    navRow.style.alignItems = 'center';
+
+    const matchCounter = document.createElement('span');
+    matchCounter.style.fontSize = '11px';
+    matchCounter.style.color = '#555';
+
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.style.padding = '4px 8px';
+    nextBtn.style.fontSize = '12px';
+    nextBtn.style.border = '1px solid #ccc';
+    nextBtn.style.borderRadius = '4px';
+    nextBtn.style.background = '#f9f9f9';
+    nextBtn.style.cursor = 'pointer';
+
+    function nodeSearchOrder(id) {
+      const m = String(id).match(/^[A-Z](\d+)_/);
+      return m ? parseInt(m[1], 10) : 1e9;
+    }
+
+    function navigateToMatch(id) {
+      ensureNodeVisible(id);
+      try { network.selectNodes([id]); } catch (e) {}
+      try { network.focus(id, { scale: 0.9, animation: true }); } catch (e) {}
+      const highlight = relatedVisibleSet(id);
+      applyDimming(highlight);
+    }
+
+    function runSearch() {
+      const q = (searchInput.value || '').trim().toLowerCase();
+      if (!q) { navRow.style.display = 'none'; return; }
+
+      const matched = [];
+      nodes.forEach(function(n) {
+        if (!n || !n.id) return;
+        const txt = [(n.label || ''), (n.title || ''), String(n.id)].join(' ').toLowerCase();
+        if (txt.includes(q)) matched.push(n.id);
+      });
+      matched.sort(function(a, b) { return nodeSearchOrder(a) - nodeSearchOrder(b); });
+
+      searchMatches = matched;
+      lastSearchQuery = q;
+
+      if (!searchMatches.length) {
+        matchCounter.textContent = 'No matches';
+        navRow.style.display = 'grid';
+        nextBtn.disabled = true;
+        searchCursor = -1;
+        return;
+      }
+
+      nextBtn.disabled = false;
+      searchCursor = 0;
+      matchCounter.textContent = '1 / ' + searchMatches.length;
+      navRow.style.display = 'grid';
+      navigateToMatch(searchMatches[0]);
+    }
+
+    function runNext() {
+      if (!searchMatches.length) return;
+      searchCursor = (searchCursor + 1) % searchMatches.length;
+      matchCounter.textContent = (searchCursor + 1) + ' / ' + searchMatches.length;
+      navigateToMatch(searchMatches[searchCursor]);
+    }
+
+    searchBtn.onclick = runSearch;
+    nextBtn.onclick = runNext;
+
+    searchInput.onkeydown = function(ev) {
+      if (ev.key === 'Enter') {
+        ev.preventDefault();
+        const q = (searchInput.value || '').trim().toLowerCase();
+        if (q === lastSearchQuery && searchMatches.length > 0) {
+          runNext();   // same query → cycle to next
+        } else {
+          runSearch(); // new query → fresh search
+        }
+      }
+    };
+    searchInput.onfocus = function() {
+      try { network.setOptions({ interaction: { keyboard: { enabled: false, bindToWindow: false } } }); } catch (e) {}
+    };
+    searchInput.onblur = function() {
+      try { network.setOptions({ interaction: { keyboard: { enabled: true, bindToWindow: true } } }); } catch (e) {}
+    };
+
+    navRow.appendChild(matchCounter);
+    navRow.appendChild(nextBtn);
+
+    searchRow.appendChild(searchInput);
+    searchRow.appendChild(searchBtn);
+    panel.appendChild(searchRow);
+    panel.appendChild(navRow);
+    
+    let colorAllOn = false;
+    let colorAllPrevFocus = [];
+    const colorAllBtn = document.createElement('button');
+    colorAllBtn.textContent = 'Show all colors';
+    colorAllBtn.style.display = 'block';
+    colorAllBtn.style.margin = '0 0 6px 0';
+    colorAllBtn.style.padding = '4px 8px';
+    colorAllBtn.style.fontSize = '12px';
+    colorAllBtn.style.border = '1px solid #ccc';
+    colorAllBtn.style.borderRadius = '4px';
+    colorAllBtn.style.background = '#f9f9f9';
+    colorAllBtn.style.cursor = 'pointer';
+    colorAllBtn.onclick = function() {
+      const sel = network.getSelectedNodes ? (network.getSelectedNodes() || []) : [];
+      if (!colorAllOn) {
+        colorAllPrevFocus = [];
+        if (sel.length) {
+          colorAllPrevFocus = Array.from(relatedVisibleSet(sel[0]));
+        }
+        applyDimming([]); // clear dimming but keep current selection
+        if (sel.length && network.selectNodes) {
+          network.selectNodes(sel);
+          lastHighlightNodes = sel.slice();
+        } else {
+          lastHighlightNodes = [];
+        }
+        colorAllOn = true;
+        colorAllBtn.style.background = '#e6f4ff';
+        colorAllBtn.style.borderColor = '#4b5563';
+      } else {
+        const focus = (colorAllPrevFocus && colorAllPrevFocus.length)
+          ? colorAllPrevFocus
+          : (sel.length ? Array.from(relatedVisibleSet(sel[0])) : []);
+        applyDimming(focus);
+        if (sel.length && network.selectNodes) {
+          network.selectNodes(sel);
+        }
+        lastHighlightNodes = focus;
+        colorAllOn = false;
+        colorAllBtn.style.background = '#f9f9f9';
+        colorAllBtn.style.borderColor = '#ccc';
+      }
+      try { network.redraw(); } catch (e) {}
+    };
+    panel.appendChild(colorAllBtn);
+    
+    // Legend for node types
+    const legendTitle = document.createElement('div');
+    legendTitle.textContent = 'Legend:';
+    legendTitle.style.margin = '8px 0 4px 0';
+    legendTitle.style.fontWeight = '600';
+    panel.appendChild(legendTitle);
+
+    const legendList = document.createElement('div');
+    legendList.setAttribute('data-legend-list', '1');
+    legendList.style.display = 'grid';
+    legendList.style.gridTemplateColumns = '1fr';
+    legendList.style.rowGap = '4px';
+
+    const legendItems = [
+      { label: 'Group', shape: 'box', color: '#b7cfd6', border: '#7c9da7' },
+      { label: 'Question', shape: 'box', color: '#bccf78', border: '#9dad5d' },
+      { label: 'Entity', shape: 'ellipse', color: '#efe0ad', border: '#bfa15e' },
+      { label: 'Calculation', shape: 'ellipse', color: '#dcdde6', border: '#6e6f78' },
+      { label: 'Exit', shape: 'box', color: '#bf3227', border: '#8f261d' },
+    ];
+
+    legendItems.forEach(function(item) {
+      const row = document.createElement('div');
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+
+      const swatch = document.createElement('span');
+      swatch.style.display = 'inline-block';
+      swatch.style.width = '14px';
+      swatch.style.height = '14px';
+      swatch.style.marginRight = '6px';
+      swatch.style.border = `1px solid ${item.border || item.color}`;
+      swatch.style.background = item.color;
+      swatch.style.borderRadius = (item.shape === 'ellipse') ? '50%' : '2px';
+
+      const text = document.createElement('span');
+      text.textContent = item.label;
+      text.style.fontSize = '12px';
+
+      row.appendChild(swatch);
+      row.appendChild(text);
+      legendList.appendChild(row);
+    });
+
+    panel.appendChild(legendList);
+
+    const groupTitle = document.createElement('div');
+    groupTitle.textContent = 'Groups:';
+    groupTitle.style.margin = '8px 0 4px 0';
+    groupTitle.style.fontWeight = '600';
+    panel.appendChild(groupTitle);
+
+    const groupSelect = document.createElement('select');
+    groupSelect.setAttribute('data-group-select', '1');
+    groupSelect.style.display = 'block';
+    groupSelect.style.marginBottom = '6px';
+    groupSelect.style.fontSize = '12px';
+    groupSelect.style.padding = '4px 6px';
+    groupSelect.style.border = '1px solid #7c9da7';
+    groupSelect.style.borderRadius = '4px';
+    groupSelect.style.background = '#f7fbfc';
+    groupSelect.style.color = '#1f2f35';
+    groupSelect.style.cursor = 'pointer';
+    panel.appendChild(groupSelect);
+
+    document.body.appendChild(panel);
+  });
+
+  function renderTopLayer(ctx) {
+    const hinted = (typeof window !== 'undefined' && window.__hintedNodes && Array.isArray(window.__hintedNodes))
+      ? window.__hintedNodes
+      : [];
+    const baseSet = lastHighlightNodes || [];
+    const selected = network.getSelectedNodes ? network.getSelectedNodes() : [];
+    const topNodes = baseSet.concat(selected || [], hinted || []);
+    const body = network.body;
+    const nodesToRedraw = new Set(topNodes);
+    const selectedSet = new Set(selected || []);
+
+    // Collect edges touching the selected node, split by type.
+    const solidEdges = [];  // flow edges — drawn first (bottom of overlay)
+    const dashedEdges = []; // logic edges — drawn second (top of overlay)
+
+    edges.forEach(function(e) {
+      if (!e || e.id == null) return;
+      var dataEdge = edges.get(e.id);
+      if (dataEdge && dataEdge.hidden === true) return;
+
+      var isDashed = (e.dashes === true) || (e.data_kind === 'logic');
+      var isFlow = (e.data_kind === 'flow');
+      var edgeObj = body && body.edges ? body.edges[e.id] : null;
+      var isHighlighted = !!(edgeObj && (edgeObj.selected === true || edgeObj.hover === true));
+      var touchesSelected = selectedSet.has(e.from) || selectedSet.has(e.to);
+
+      if (!isHighlighted && !touchesSelected) return;
+      if (!isDashed && !isFlow) return;
+
+      nodesToRedraw.add(e.from);
+      nodesToRedraw.add(e.to);
+      if (isDashed) {
+        dashedEdges.push(e.id);
+      } else {
+        solidEdges.push(e.id);
+      }
+    });
+
+    if (!solidEdges.length && !dashedEdges.length && !nodesToRedraw.size) return;
+    try {
+      // Layer 1: redraw solid (flow) edges
+      solidEdges.forEach(function(eid) {
+        var edge = body && body.edges ? body.edges[eid] : null;
+        if (edge && edge.draw) edge.draw(ctx);
+      });
+      // Layer 2: redraw dashed (logic) edges on top of solid
+      dashedEdges.forEach(function(eid) {
+        var edge = body && body.edges ? body.edges[eid] : null;
+        if (edge && edge.draw) edge.draw(ctx);
+      });
+      // Layer 3: redraw nodes on top of all edges
+      nodesToRedraw.forEach(function(id) {
+        var node = body && body.nodes ? body.nodes[id] : null;
+        if (node && node.draw) node.draw(ctx);
+      });
+    } catch (e) {}
+  }
+
+  network.on("afterDrawing", function(ctx) {
+    renderTopLayer(ctx);
+  });
+
+  // Freeze physics once stabilized to stop jittering after initial layout
+  if (!canReuseLayout) {
+    network.once("stabilized", function () {
+      captureLayoutToCache(layoutCacheKey);
+      network.setOptions({ physics: false });
+    });
+  } else {
+    network.setOptions({ physics: false });
+    if (network.stopSimulation) network.stopSimulation();
+  }
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof network === 'undefined' || typeof nodes === 'undefined') return;
+  try {
+    network.setOptions({
+      physics: { enabled: false },
+      interaction: { dragNodes: false, dragView: true }
+    });
+    if (network.stopSimulation) network.stopSimulation();
+  } catch (e) {}
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof nodes === 'undefined') return;
+  const isHiddenTarget = (id) => (typeof id === 'string' && id === 'root');
+
+  function hideGroups() {
+    const updates = [];
+    nodes.forEach(function(n) {
+      if (n && isHiddenTarget(n.id) && n.hidden !== true) {
+        updates.push({ id: n.id, hidden: true });
+      }
+    });
+    if (updates.length) nodes.update(updates);
+  }
+
+  const origUpdate = nodes.update ? nodes.update.bind(nodes) : null;
+  if (origUpdate) {
+    nodes.update = function(payload, ...rest) {
+      const arr = Array.isArray(payload) ? payload.slice() : [payload];
+      arr.forEach(function(item) {
+        if (item && isHiddenTarget(item.id)) {
+          item.hidden = true;
+        }
+      });
+      return origUpdate(arr.length === 1 ? arr[0] : arr, ...rest);
+    };
+  }
+
+  hideGroups();
+  try { if (network && network.on) network.on('afterDrawing', hideGroups); } catch (e) {}
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof network === 'undefined' || typeof nodes === 'undefined' || typeof edges === 'undefined') return;
+
+  const injectedGroups = [{"id": "G3_page_1", "label": "5: page_1 [field-list]", "title": "field-list \n name=page_1", "members": ["Q4_part_id", "Q5_text1_page1", "Q7_consent"]}, {"id": "G10_page_2", "label": "12: page_2 [field-list]", "title": "field-list \n name=page_2\nCondition: consent = \"yes\"", "members": ["Q11_dob", "Q12_dob_date", "Q13_dob_month", "Q14_dob_year", "Q15_participant_or_guardian", "Q16_phone", "Q17_gender", "Q19_selection1", "Q21_selection2", "Q23_selection3", "Q24_selection4", "Q25_long_option", "Q26_text1", "Q28_text2", "Q29_text3", "Q30_text4"]}, {"id": "G32_page_3", "label": "34: page_3 [field-list]", "title": "field-list \n name=page_3\nCondition: gender_dependent1 = \"1\"", "members": ["Q33_symptom1", "Q34_symptom2"]}, {"id": "G37_page_4", "label": "39: page_4 [repeat]", "title": "repeat \n name=page_4\nCondition: COND: eligible_page4 = \"1\"", "members": ["Q38_likert", "Q39_text5"]}];
+
+  function cleanGroupLabel(gid) {
+    const raw = String(gid || '');
+    const trimmed = raw
+      .replace(/^\s*\d+:\s*/, '')
+      .replace(/\s*\[[^\]]*\]\s*$/, '')
+      .trim();
+    return trimmed || raw;
+  }
+
+  function groupEntries() {
+    if (Array.isArray(injectedGroups) && injectedGroups.length) {
+      return injectedGroups.map(function(g) {
+        // Include anchor nodes (H_*) so halos wrap the visible group label as well.
+        const members = Array.isArray(g.members) ? g.members.slice() : [];
+        const anchorId = g && g.id ? ('H_' + g.id) : null;
+        if (anchorId) members.push(anchorId);
+        return { id: g.id, label: g.label || '', members: members };
+      });
+    }
+    return [];
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    if (ctx.roundRect) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+      ctx.stroke();
+      return;
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  function drawGroupBoxes(ctx) {
+    const scale = network.getScale ? network.getScale() : 1;
+    const pad = 18 / Math.max(scale, 0.4);
+    const titleHeight = 18;
+
+    const groups = groupEntries();
+    groups.forEach(function(g) {
+      const members = (Array.isArray(g.members) ? g.members : []).filter(function(mid) {
+        const item = nodes.get(mid);
+        return item && item.hidden !== true;
+      });
+      if (!members.length) return;
+
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      members.forEach(function(mid) {
+        let box;
+        try { box = network.getBoundingBox(mid); } catch (e) { box = null; }
+        if (!box) return;
+        minX = Math.min(minX, box.left);
+        minY = Math.min(minY, box.top);
+        maxX = Math.max(maxX, box.right);
+        maxY = Math.max(maxY, box.bottom);
+      });
+      if (!isFinite(minX) || !isFinite(minY) || !isFinite(maxX) || !isFinite(maxY)) return;
+
+      const left = minX - pad;
+      const top = minY - pad - titleHeight * 0.35;
+      const width = (maxX - minX) + pad * 2;
+      const height = (maxY - minY) + pad * 2 + titleHeight * 0.35;
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#7c9da7';
+      ctx.fillStyle = 'rgba(183,207,214,0.18)';
+      roundRect(ctx, left, top, width, height, 12);
+      ctx.restore();
+
+      const label = cleanGroupLabel(g.label || g.id);
+      if (!label) return;
+
+      ctx.save();
+      ctx.font = '13px Inter, Arial, sans-serif';
+      ctx.textBaseline = 'top';
+      const textWidth = ctx.measureText(label).width;
+      const pillPadX = 8;
+      const pillPadY = 3;
+      const pillH = 20;
+      const pillW = textWidth + pillPadX * 2;
+      const pillX = left + 12;
+      const pillY = top - pillH * 0.55;
+
+      ctx.fillStyle = '#f7fbfd';
+      ctx.strokeStyle = '#7c9da7';
+      ctx.lineWidth = 1.2;
+      roundRect(ctx, pillX, pillY, pillW, pillH, 8);
+      ctx.fillStyle = '#1f2937';
+      ctx.fillText(label, pillX + pillPadX, pillY + pillPadY);
+      ctx.restore();
+    });
+  }
+
+  network.on("afterDrawing", function(ctx) {
+    drawGroupBoxes(ctx);
+  });
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof network === 'undefined' || typeof nodes === 'undefined' || typeof edges === 'undefined') return;
+
+  let lastHinted = [];
+  const prevStyles = new Map();
+  const changedIds = new Set();
+  function syncHintGlobals() {
+    try { window.__hintedNodes = lastHinted.slice(); } catch (e) {}
+  }
+  syncHintGlobals();
+
+  function cloneColor(col) {
+    if (col == null) return col;
+    if (typeof col === 'string') return col;
+    if (typeof col === 'object') return JSON.parse(JSON.stringify(col));
+    return col;
+  }
+
+  const baseColors = new Map();
+  const baseBorderWidth = new Map();
+  const DIM_COLOR = { background: "#e6e7eb", border: "#c7c9d1" };
+  const DIM_FONT_COLOR = "rgba(0,0,0,0.55)";
+  nodes.forEach(function(n) {
+    if (!n) return;
+    baseColors.set(n.id, cloneColor(n.color));
+    if (typeof n.borderWidth === 'number') baseBorderWidth.set(n.id, n.borderWidth);
+  });
+
+  // Flow edge base colors and update helpers to tint parent/child lines differently.
+  const baseFlowColors = new Map();
+  edges.forEach(function(e) {
+    if (!e || e.data_kind !== 'flow' || e.id == null) return;
+    baseFlowColors.set(e.id, cloneColor(e.color));
+  });
+  const baseExitColors = new Map();
+  edges.forEach(function(e) {
+    if (!e || e.data_kind !== 'exit' || e.id == null) return;
+    baseExitColors.set(e.id, cloneColor(e.color));
+  });
+  const tintedFlowIds = new Set();
+  const tintedExitIds = new Set();
+
+  function resetFlowEdgeColors() {
+    if (!tintedFlowIds.size) return;
+    const updates = [];
+    tintedFlowIds.forEach(function(id) {
+      const col = baseFlowColors.get(id);
+      if (col) updates.push({ id: id, color: col });
+    });
+    if (updates.length) edges.update(updates);
+    tintedFlowIds.clear();
+  }
+
+  function resetExitEdgeColors() {
+    if (!tintedExitIds.size) return;
+    const updates = [];
+    tintedExitIds.forEach(function(id) {
+      const col = baseExitColors.get(id);
+      if (col) updates.push({ id: id, color: col });
+    });
+    if (updates.length) edges.update(updates);
+    tintedExitIds.clear();
+  }
+
+  function tintFlowEdges(selectedId) {
+    resetFlowEdgeColors();
+    if (!selectedId) return;
+
+    const incoming = [];
+    const outgoing = [];
+    edges.forEach(function(e) {
+      if (!e || e.id == null) return;
+      if (e.data_kind === 'flow') {
+        if (e.to === selectedId) incoming.push(e.id);
+        else if (e.from === selectedId) outgoing.push(e.id);
+      }
+    });
+
+    const lightColor = { color: "#cbd2df", highlight: "#a8b3c6", hover: "#a8b3c6" };
+    const darkColor = { color: "#7e8ca6", highlight: "#374151", hover: "#374151" };
+    const updates = [];
+    incoming.forEach(function(id) { updates.push({ id: id, color: lightColor }); });
+    outgoing.forEach(function(id) { updates.push({ id: id, color: darkColor }); });
+    if (updates.length) {
+      edges.update(updates);
+      updates.forEach(function(u) { tintedFlowIds.add(u.id); });
+    }
+  }
+
+  // Build a simple parent -> children map from structural edges.
+  const childrenMap = new Map();
+  edges.forEach(function(e) {
+    if (!e || e.data_kind !== 'struct') return;
+    if (e.from == null || e.to == null) return;
+    if (!childrenMap.has(e.from)) childrenMap.set(e.from, []);
+    childrenMap.get(e.from).push(e.to);
+  });
+
+  const injectedGroups = [{"id": "G3_page_1", "label": "5: page_1 [field-list]", "title": "field-list \n name=page_1", "members": ["Q4_part_id", "Q5_text1_page1", "Q7_consent"]}, {"id": "G10_page_2", "label": "12: page_2 [field-list]", "title": "field-list \n name=page_2\nCondition: consent = \"yes\"", "members": ["Q11_dob", "Q12_dob_date", "Q13_dob_month", "Q14_dob_year", "Q15_participant_or_guardian", "Q16_phone", "Q17_gender", "Q19_selection1", "Q21_selection2", "Q23_selection3", "Q24_selection4", "Q25_long_option", "Q26_text1", "Q28_text2", "Q29_text3", "Q30_text4"]}, {"id": "G32_page_3", "label": "34: page_3 [field-list]", "title": "field-list \n name=page_3\nCondition: gender_dependent1 = \"1\"", "members": ["Q33_symptom1", "Q34_symptom2"]}, {"id": "G37_page_4", "label": "39: page_4 [repeat]", "title": "repeat \n name=page_4\nCondition: COND: eligible_page4 = \"1\"", "members": ["Q38_likert", "Q39_text5"]}];
+  const groupMembers = new Map();
+  (Array.isArray(injectedGroups) ? injectedGroups : []).forEach(function(g) {
+    const gid = String(g.id || '');
+    const mems = Array.isArray(g.members) ? g.members.map(String) : [];
+    groupMembers.set(gid, mems);
+    groupMembers.set('H_' + gid, mems);
+  });
+
+  function isGroupId(id) {
+    return typeof id === 'string' && id.startsWith('G');
+  }
+  function isAnchorId(id) {
+    return typeof id === 'string' && id.startsWith('H_');
+  }
+  function isQuestionId(id) {
+    return typeof id === 'string' && id.startsWith('Q');
+  }
+  function isNonQuestion(id) {
+    if (!id || typeof id !== 'string') return false;
+    return id === 'root' || isGroupId(id) || isAnchorId(id) || id.startsWith('X');
+  }
+
+  // Pre-compute line numbers from ids/labels.
+  const nodeLine = new Map();
+  nodes.forEach(function(n) {
+    if (!n) return;
+    const id = n.id;
+    const lbl = n.label || "";
+    let val = (function rowNumber(id, label) {
+      if (typeof id === 'string') {
+        const m = id.match(/[A-Z](\d+)_/);
+        if (m) return parseInt(m[1], 10);
+      }
+      if (typeof label === 'string') {
+        const m2 = label.trim().match(/^(\d+)/);
+        if (m2) return parseInt(m2[1], 10);
+      }
+      return 1e9;
+    })(id, lbl);
+    if (id === 'root') val = 0; // root should hint the earliest node
+    nodeLine.set(id, val);
+  });
+
+  const groupQuestionCache = new Map();
+  function descendantQuestions(startId) {
+    const cached = groupQuestionCache.get(startId);
+    if (cached) return cached.slice();
+
+    const out = [];
+    const seen = new Set();
+
+    function pushIfQuestion(qid) {
+      if (!isQuestionId(qid)) return;
+      if (seen.has(qid)) return;
+      seen.add(qid);
+      out.push(qid);
+    }
+
+    const listed = groupMembers.get(startId);
+    if (listed && listed.length) {
+      listed.forEach(pushIfQuestion);
+    } else {
+      const stack = [startId];
+      while (stack.length) {
+        const cid = stack.pop();
+        if (seen.has(cid)) continue;
+        seen.add(cid);
+        if (isQuestionId(cid)) out.push(cid);
+        const kids = childrenMap.get(cid) || [];
+        kids.forEach(function(k) { stack.push(k); });
+      }
+    }
+
+    out.sort(function(a, b) {
+      const la = nodeLine.get(a) || 1e9;
+      const lb = nodeLine.get(b) || 1e9;
+      return la - lb;
+    });
+    groupQuestionCache.set(startId, out.slice());
+    return out;
+  }
+
+  function firstQuestionDesc(startId) {
+    const qs = descendantQuestions(startId);
+    if (!qs.length) return null;
+    const visible = qs.filter(function(id) {
+      const item = nodes.get(id);
+      return item && item.hidden !== true;
+    });
+    return visible[0] || qs[0] || null;
+  }
+
+  function hexToRgb(hex) {
+    if (!hex || typeof hex !== 'string') return null;
+    const m = hex.trim().match(/^#?([0-9a-fA-F]{6})$/);
+    if (!m) return null;
+    const intVal = parseInt(m[1], 16);
+    return {
+      r: (intVal >> 16) & 255,
+      g: (intVal >> 8) & 255,
+      b: intVal & 255
+    };
+  }
+
+  function rgbToHex(c) {
+    const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+    const r = clamp(c.r).toString(16).padStart(2, '0');
+    const g = clamp(c.g).toString(16).padStart(2, '0');
+    const b = clamp(c.b).toString(16).padStart(2, '0');
+    return '#' + r + g + b;
+  }
+
+  function darken(colStr, factor) {
+    const rgb = hexToRgb(colStr);
+    if (!rgb) return colStr;
+    return rgbToHex({ r: rgb.r * factor, g: rgb.g * factor, b: rgb.b * factor });
+  }
+
+  function bgOf(node) {
+    if (!node) return null;
+    const c = node.color;
+    if (!c) return null;
+    if (typeof c === 'string') return c;
+    if (typeof c === 'object' && c.background) return c.background;
+    return null;
+  }
+
+  function borderOf(node) {
+    if (!node) return null;
+    const c = node.color;
+    if (!c) return null;
+    if (typeof c === 'object' && c.border) return c.border;
+    if (typeof c === 'string') return c;
+    return null;
+  }
+
+  function clearHints() {
+    const updates = [];
+    changedIds.forEach(function(id) {
+      const prev = prevStyles.get(id);
+      if (!prev) return;
+      const update = { id: id };
+      if (prev.color !== undefined) update.color = prev.color;
+      if (prev.borderWidth !== undefined) update.borderWidth = prev.borderWidth;
+      updates.push(update);
+    });
+    if (updates.length) nodes.update(updates);
+    lastHinted = [];
+    changedIds.clear();
+    syncHintGlobals();
+    prevStyles.clear();
+    resetFlowEdgeColors();
+    resetExitEdgeColors();
+  }
+
+  function applyHint(ids) {
+    const updates = [];
+    ids.forEach(function(id) {
+      const item = nodes.get(id);
+      if (!item) return;
+      if (!prevStyles.has(id)) {
+        prevStyles.set(id, { color: item.color, borderWidth: item.borderWidth });
+      }
+      changedIds.add(id);
+
+      const darkerBg = '#d9a29c';
+      const darkerBorder = '#d9a29c';
+      updates.push({
+        id: id,
+        color: {
+          background: darkerBg,
+          border: darkerBorder,
+          highlight: { background: darkerBg, border: darkerBorder },
+          hover: { background: darkerBg, border: darkerBorder }
+        },
+        borderWidth: 2
+      });
+    });
+    if (updates.length) nodes.update(updates);
+    lastHinted = ids.slice();
+    syncHintGlobals();
+  }
+
+  function applyLocalDimming(focusIds) {
+    const focusSet = new Set(focusIds || []);
+    const updates = [];
+    nodes.forEach(function(item) {
+      if (!item || item.hidden === true) return;
+      const inFocus = focusSet.has(item.id);
+      const baseCol = baseColors.has(item.id) ? cloneColor(baseColors.get(item.id)) : cloneColor(item.color);
+      const baseWidth = (typeof item.borderWidth === 'number')
+        ? item.borderWidth
+        : (baseBorderWidth.get(item.id) || 1);
+
+      let targetColor = baseCol;
+      let targetFontColor = null;
+      if (!inFocus) {
+        targetColor = DIM_COLOR;
+        targetFontColor = DIM_FONT_COLOR;
+      }
+
+      if (!prevStyles.has(item.id)) {
+        prevStyles.set(item.id, { color: item.color, borderWidth: item.borderWidth, font: item.font });
+      }
+      changedIds.add(item.id);
+
+      const fontObj = (typeof item.font === "object" && item.font) ? item.font : {};
+      const newFont = Object.assign({}, fontObj);
+      if (targetFontColor) newFont.color = targetFontColor;
+      else if (newFont.color) delete newFont.color;
+
+      updates.push({
+        id: item.id,
+        color: targetColor,
+        borderWidth: inFocus ? baseWidth + 1.5 : baseWidth,
+        font: newFont
+      });
+    });
+    if (updates.length) nodes.update(updates);
+
+    // Dim exit edges unless connected to focused nodes.
+    const dimExitColor = { color: "#d9d9d9", highlight: "#c7c7c7", hover: "#c7c7c7" };
+    const exitUpdates = [];
+    edges.forEach(function(e) {
+      if (!e || e.data_kind !== 'exit' || e.id == null) return;
+      const keep = focusSet.has(e.from) || focusSet.has(e.to);
+      const baseCol = baseExitColors.get(e.id) || e.color;
+      const targetCol = keep ? baseCol : dimExitColor;
+      exitUpdates.push({ id: e.id, color: targetCol });
+      tintedExitIds.add(e.id);
+    });
+    if (exitUpdates.length) edges.update(exitUpdates);
+  }
+
+  function applyGroupHighlight(ids) {
+    const updates = [];
+    ids.forEach(function(id) {
+      const item = nodes.get(id);
+      if (!item) return;
+      if (!prevStyles.has(id)) {
+        prevStyles.set(id, { color: item.color, borderWidth: item.borderWidth });
+      }
+      changedIds.add(id);
+      const baseCol = baseColors.has(id) ? cloneColor(baseColors.get(id)) : cloneColor(item.color);
+      const baseWidth = (typeof item.borderWidth === 'number')
+        ? item.borderWidth
+        : (baseBorderWidth.get(id) || 1);
+      updates.push({
+        id: id,
+        color: baseCol,
+        borderWidth: baseWidth + 1.5
+      });
+    });
+    if (updates.length) nodes.update(updates);
+  }
+
+  function pickLowestLine() {
+    let best = null;
+    let bestLine = 1e12;
+
+    nodes.forEach(function(n) {
+      if (!n || n.hidden === true || isNonQuestion(n.id)) return;
+      const ln = nodeLine.get(n.id);
+      if (ln === undefined) return;
+      if (ln < bestLine) {
+        best = n.id;
+        bestLine = ln;
+      }
+    });
+
+    // If none visible (unlikely), consider all nodes.
+    if (!best) {
+      nodes.forEach(function(n) {
+        if (!n || isNonQuestion(n.id)) return;
+        const ln = nodeLine.get(n.id);
+        if (ln === undefined) return;
+        if (ln < bestLine) {
+          best = n.id;
+          bestLine = ln;
+        }
+      });
+    }
+    return best;
+  }
+
+  // Map of solid flow edges (data_kind === 'flow')
+  const flowChildren = new Map();
+  const exitChildren = new Map();
+  edges.forEach(function(e) {
+    if (!e || (e.data_kind !== 'flow' && e.data_kind !== 'exit')) return;
+    if (e.from == null || e.to == null) return;
+    if (e.data_kind === 'flow') {
+      if (!flowChildren.has(e.from)) flowChildren.set(e.from, []);
+      flowChildren.get(e.from).push(e.to);
+    } else if (e.data_kind === 'exit') {
+      if (!exitChildren.has(e.from)) exitChildren.set(e.from, []);
+      exitChildren.get(e.from).push(e.to);
+    }
+  });
+
+  function solidFlowTargets(parentId) {
+    const arr = (flowChildren.get(parentId) || []).concat(exitChildren.get(parentId) || []);
+    const visible = arr.filter(function(id) {
+      const item = nodes.get(id);
+      return item && item.hidden !== true;
+    });
+    return visible.length ? visible : arr.slice();
+  }
+
+  // Keep both the selected node and its hints in view; allow slight zoom-out.
+  function recenterOnSelection(currentId, hintedIds) {
+    const ids = [];
+    if (currentId) ids.push(currentId);
+    if (Array.isArray(hintedIds)) {
+      hintedIds.forEach(function(id) {
+        if (id && ids.indexOf(id) === -1) ids.push(id);
+      });
+    } else if (hintedIds) {
+      if (ids.indexOf(hintedIds) === -1) ids.push(hintedIds);
+    }
+    const unique = Array.from(new Set(ids.filter(Boolean)));
+    if (!unique.length) return;
+
+    const visibleTargets = unique.filter(function(id) {
+      const item = nodes.get(id);
+      return item && item.hidden !== true;
+    });
+    const targets = visibleTargets.length ? visibleTargets : unique;
+
+    // Compute bounding box of all target nodes and derive an exact scale so
+    // every hinted node is guaranteed to be on screen, regardless of how far
+    // apart the nodes are.  Using moveTo() instead of fit() avoids the
+    // minZoom/maxZoom clamping that fit() applies in some vis.js versions.
+    try {
+      const positions = network.getPositions(targets);
+      const pts = Object.values(positions).filter(function(p) {
+        return p && typeof p.x === 'number' && typeof p.y === 'number';
+      });
+      if (!pts.length) return;
+
+      let minX = pts[0].x, maxX = pts[0].x, minY = pts[0].y, maxY = pts[0].y;
+      pts.forEach(function(p) {
+        if (p.x < minX) minX = p.x;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.y > maxY) maxY = p.y;
+      });
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+
+      // When all targets are at (nearly) the same position keep current zoom.
+      if (maxX - minX < 10 && maxY - minY < 10) {
+        network.moveTo({
+          position: { x: cx, y: cy },
+          scale: Math.min(network.getScale(), 0.9),
+          animation: { duration: 500, easingFunction: 'easeInOutQuad' }
+        });
+        return;
+      }
+
+      // Derive the scale that fits the bounding box inside the canvas viewport.
+      const container = document.getElementById('mynetwork');
+      const vpW = (container ? container.clientWidth  : 800) || 800;
+      const vpH = (container ? container.clientHeight : 600) || 600;
+      const pad = 80; // px padding on each side
+      const scaleX = (vpW - 2 * pad) / (maxX - minX);
+      const scaleY = (vpH - 2 * pad) / (maxY - minY);
+      let scale = Math.min(scaleX, scaleY);
+
+      // Never zoom *in* past current scale (we only move/zoom-out to reveal nodes).
+      // Allow zooming out as far as needed; only enforce a hard floor for usability.
+      scale = Math.min(scale, network.getScale(), 1.0);
+      scale = Math.max(scale, 0.05);
+
+      network.moveTo({
+        position: { x: cx, y: cy },
+        scale: scale,
+        animation: { duration: 500, easingFunction: 'easeInOutQuad' }
+      });
+    } catch (e) {
+      try { network.focus(targets[0], { scale: 0.9, animation: true }); } catch (err) {}
+    }
+  }
+
+  function updateHintFromSelection(explicitNodes) {
+    const sel = (explicitNodes && explicitNodes.length) ? explicitNodes
+              : ((network.getSelectedNodes && network.getSelectedNodes()) || []);
+    clearHints();
+    if (!sel.length) return { selected: null, hinted: [] };
+    const pid = sel[0];
+
+    const isGroupLike = isGroupId(pid) || isAnchorId(pid);
+    let target = null;
+    let hinted = [];
+
+    if (isGroupLike) {
+      hinted = descendantQuestions(pid);
+      if (hinted.length) {
+        const visible = hinted.filter(function(id) {
+          const item = nodes.get(id);
+          return item && item.hidden !== true;
+        });
+        target = visible[0] || hinted[0] || null;
+      }
+    } else {
+      const direct = solidFlowTargets(pid);
+      hinted = direct.slice();
+      if (direct.length) {
+        target = direct[0];
+      } else if (pid === 'root') {
+        target = pickLowestLine();
+        if (target) hinted = [target];
+      }
+    }
+
+    if (isGroupLike && hinted.length) {
+      const others = hinted.filter(function(id) { return id !== target; });
+      applyGroupHighlight(others);
+    }
+
+    const focusSet = [];
+    if (pid) focusSet.push(pid);
+    if (target) focusSet.push(target);
+    if (hinted && hinted.length) focusSet.push.apply(focusSet, hinted);
+
+    applyLocalDimming(focusSet);
+    const hintTargets = isGroupLike
+      ? (target ? [target] : [])
+      : (hinted.length ? hinted.slice() : (target ? [target] : []));
+    if (hintTargets.length) applyHint(hintTargets);
+    tintFlowEdges(pid);
+    return { selected: pid, hinted: hintTargets };
+  }
+
+  network.on("selectNode", function(params) {
+    clearHints();
+    updateHintFromSelection(params && params.nodes);
+  });
+
+  network.on("deselectNode", function() {
+    clearHints();
+  });
+
+  // Re-apply after other click handlers (dimming, etc.) run.
+  network.on("click", function(params) {
+    const nodesFromClick = params && params.nodes;
+    setTimeout(function() {
+      const result = updateHintFromSelection(nodesFromClick) || {};
+      if (result.selected) {
+        recenterOnSelection(result.selected, result.hinted);
+      }
+    }, 0);
+  });
+
+  // Draw a top-most halo around hinted nodes so they stay visible.
+  function drawHintHalo(ctx) {
+    const selectedIds = (network.getSelectedNodes && network.getSelectedNodes()) || [];
+    const targets = Array.from(new Set((lastHinted || []).concat(selectedIds || [])));
+    if (!targets.length) return;
+    ctx.save();
+    ctx.lineWidth = 4;
+
+    function rgbaFromHex(hex, alpha) {
+      const rgb = hexToRgb(hex);
+      if (!rgb) return null;
+      return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+    }
+
+    function haloColors(id, isHinted) {
+      if (isHinted) {
+        return { stroke: '#d15b51', fill: 'rgba(217,162,156,0.18)' };
+      }
+      const item = nodes.get(id);
+      const bg = bgOf(item) || '#b7cfd6';
+      const stroke = darken(bg, 0.8);
+      const fill = rgbaFromHex(bg, 0.18) || 'rgba(0,0,0,0.12)';
+      return { stroke, fill };
+    }
+
+    targets.forEach(function(id) {
+      const isHinted = lastHinted.indexOf(id) !== -1;
+      const palette = haloColors(id, isHinted);
+      ctx.strokeStyle = palette.stroke;
+      ctx.fillStyle = palette.fill;
+      if (!network.getBoundingBox) return;
+      let box;
+      try {
+        box = network.getBoundingBox(id);
+      } catch (e) {
+        box = null;
+      }
+      if (!box) return;
+      const pad = 8;
+      const left = box.left - pad;
+      const top = box.top - pad;
+      const width = (box.right - box.left) + pad * 2;
+      const height = (box.bottom - box.top) + pad * 2;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(left, top, width, height, 8);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillRect(left, top, width, height);
+        ctx.strokeRect(left, top, width, height);
+      }
+    });
+    ctx.restore();
+  }
+
+  network.on("afterDrawing", function(ctx) {
+    drawHintHalo(ctx);
+  });
+
+  // Initial hint: pick the first visible node with the smallest line number.
+  network.once("afterDrawing", function() {
+    const first = pickLowestLine();
+    if (first) {
+      applyHint([first]);
+      tintFlowEdges(first);
+    }
+  });
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof nodes === 'undefined' || typeof network === 'undefined') return;
+  const injectedGroups = [{"id": "G3_page_1", "label": "5: page_1 [field-list]", "title": "field-list \n name=page_1", "members": ["Q4_part_id", "Q5_text1_page1", "Q7_consent"]}, {"id": "G10_page_2", "label": "12: page_2 [field-list]", "title": "field-list \n name=page_2\nCondition: consent = \"yes\"", "members": ["Q11_dob", "Q12_dob_date", "Q13_dob_month", "Q14_dob_year", "Q15_participant_or_guardian", "Q16_phone", "Q17_gender", "Q19_selection1", "Q21_selection2", "Q23_selection3", "Q24_selection4", "Q25_long_option", "Q26_text1", "Q28_text2", "Q29_text3", "Q30_text4"]}, {"id": "G32_page_3", "label": "34: page_3 [field-list]", "title": "field-list \n name=page_3\nCondition: gender_dependent1 = \"1\"", "members": ["Q33_symptom1", "Q34_symptom2"]}, {"id": "G37_page_4", "label": "39: page_4 [repeat]", "title": "repeat \n name=page_4\nCondition: COND: eligible_page4 = \"1\"", "members": ["Q38_likert", "Q39_text5"]}];
+
+  function buildOptions(selectEl) {
+    if (!selectEl) return;
+    selectEl.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Jump to group...';
+    selectEl.appendChild(placeholder);
+    const groups = Array.isArray(injectedGroups) ? injectedGroups.slice() : [];
+    groups.sort(function(a, b) {
+      const ra = String(a.id || '').match(/G(\d+)_/);
+      const rb = String(b.id || '').match(/G(\d+)_/);
+      const na = ra ? parseInt(ra[1], 10) : 1e9;
+      const nb = rb ? parseInt(rb[1], 10) : 1e9;
+      return na - nb;
+    });
+    groups.forEach(function(g) {
+      const opt = document.createElement('option');
+      opt.value = g.id;
+      opt.textContent = g.label || g.id;
+      selectEl.appendChild(opt);
+    });
+    selectEl.value = '';
+  }
+
+  function centerOnGroup(gid) {
+    if (!gid || typeof gid !== 'string') return;
+    const anchorId = 'H_' + gid;
+    let targetId = null;
+    try {
+      const anchorNode = nodes.get(anchorId);
+      if (anchorNode) targetId = anchorId;
+    } catch (e) {}
+    if (!targetId) {
+      const g = (injectedGroups || []).find(x => String(x.id) === gid);
+      const members = g && Array.isArray(g.members) ? g.members : [];
+      targetId = members.length ? members[0] : null;
+    }
+    if (!targetId) return;
+    try {
+      network.selectNodes([targetId]);
+      network.fit({ nodes: [targetId], animation: { duration: 400 }, maxZoom: 1.0, minZoom: 0.2 });
+    } catch (e) {}
+  }
+
+  function init() {
+    const selects = Array.from(document.querySelectorAll('select[data-group-select]'));
+    if (!selects.length) return;
+    selects.forEach(function(sel) {
+      buildOptions(sel);
+      sel.onchange = function() {
+        const val = sel.value;
+        if (val) centerOnGroup(val);
+      };
+    });
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(init, 0);
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+})();
+</script>
+
+
+<script>
+(function() {
+  if (typeof edges === 'undefined' || typeof network === 'undefined') return;
+
+  var logicVisible = false;
+  var flowVisible = false;
+
+  var logicEdgeIds = [];
+  var flowEdgeIds = [];
+  edges.forEach(function(e) {
+    if (!e || e.id == null) return;
+    if (e.data_kind === 'logic') logicEdgeIds.push(e.id);
+    else if (e.data_kind === 'flow') flowEdgeIds.push(e.id);
+  });
+
+  // Build map: nodeId -> list of connected flow edge IDs
+  var flowEdgesByNode = {};
+  edges.forEach(function(e) {
+    if (!e || e.id == null || e.data_kind !== 'flow') return;
+    var f = String(e.from), t = String(e.to);
+    if (!flowEdgesByNode[f]) flowEdgesByNode[f] = [];
+    flowEdgesByNode[f].push(e.id);
+    if (!flowEdgesByNode[t]) flowEdgesByNode[t] = [];
+    flowEdgesByNode[t].push(e.id);
+  });
+
+  var selectionRevealedFlowIds = [];
+
+  function setEdgesHidden(ids, hidden) {
+    if (!ids.length) return;
+    edges.update(ids.map(function(id) { return { id: id, hidden: hidden }; }));
+  }
+
+  // Re-insert visible logic edges at the end of the DataSet so vis.js draws them last (on top).
+  function bumpLogicEdgesOnTop() {
+    var visible = [];
+    logicEdgeIds.forEach(function(id) {
+      var e = edges.get(id);
+      if (e && e.hidden !== true) visible.push(e);
+    });
+    if (!visible.length) return;
+    var removeIds = visible.map(function(e) { return e.id; });
+    edges.remove(removeIds);
+    edges.add(visible);
+  }
+
+  function revealFlowForNode(nodeId) {
+    // Hide previously revealed selection edges (unless global toggle is on)
+    clearSelectionFlow();
+    if (flowVisible) return; // global toggle already shows all
+    var ids = flowEdgesByNode[String(nodeId)] || [];
+    if (!ids.length) return;
+    setEdgesHidden(ids, false);
+    selectionRevealedFlowIds = ids.slice();
+    // Ensure dashed edges stay on top of newly shown solid edges
+    bumpLogicEdgesOnTop();
+  }
+
+  function clearSelectionFlow() {
+    if (flowVisible) { selectionRevealedFlowIds = []; return; }
+    if (selectionRevealedFlowIds.length) {
+      setEdgesHidden(selectionRevealedFlowIds, true);
+      selectionRevealedFlowIds = [];
+    }
+  }
+
+  // Hide both edge types on load
+  setEdgesHidden(logicEdgeIds, true);
+  setEdgesHidden(flowEdgeIds, true);
+
+  // Hide calculation nodes on load (JS-side ensures this regardless of serialized state)
+  var calcNodeIds = [];
+  nodes.forEach(function(n) {
+    if (n && typeof n.id === 'string' && n.id.startsWith('C')) calcNodeIds.push(n.id);
+  });
+  if (calcNodeIds.length) {
+    nodes.update(calcNodeIds.map(function(id) { return { id: id, hidden: true }; }));
+  }
+
+  // Show connected flow edges on node selection
+  network.on('selectNode', function(params) {
+    var sel = (params && params.nodes) ? params.nodes : [];
+    if (sel.length === 1) revealFlowForNode(sel[0]);
+  });
+  network.on('deselectNode', function() {
+    clearSelectionFlow();
+  });
+  network.on('click', function(params) {
+    var sel = (params && params.nodes) ? params.nodes : [];
+    if (sel.length === 1) {
+      revealFlowForNode(sel[0]);
+    } else if (!sel.length) {
+      clearSelectionFlow();
+    }
+  });
+
+  function addButtons() {
+    var panel = null;
+    var divs = document.querySelectorAll('div');
+    for (var i = 0; i < divs.length; i++) {
+      var el = divs[i];
+      if (el.style && el.style.position === 'absolute' && el.textContent && el.textContent.indexOf('Display mode:') !== -1) {
+        panel = el;
+        break;
+      }
+    }
+    if (!panel) return false;
+
+    // Find the Legend title so we can insert before it
+    var legendTitle = null;
+    var children = panel.querySelectorAll('div');
+    for (var j = 0; j < children.length; j++) {
+      if ((children[j].textContent || '').trim() === 'Legend:') {
+        legendTitle = children[j];
+        break;
+      }
+    }
+
+    var wrapper = document.createElement('div');
+
+    var title = document.createElement('div');
+    title.textContent = 'Lines display:';
+    title.style.margin = '8px 0 4px 0';
+    title.style.fontWeight = '600';
+    wrapper.appendChild(title);
+
+    function makeBtn(label) {
+      var btn = document.createElement('button');
+      btn.textContent = label;
+      btn.style.display = 'block';
+      btn.style.width = '100%';
+      btn.style.margin = '0 0 4px 0';
+      btn.style.padding = '4px 8px';
+      btn.style.fontSize = '12px';
+      btn.style.border = '1px solid #ccc';
+      btn.style.borderRadius = '4px';
+      btn.style.background = '#f9f9f9';
+      btn.style.cursor = 'pointer';
+      return btn;
+    }
+
+    var condBtn = makeBtn('Show conditions');
+    condBtn.onclick = function() {
+      logicVisible = !logicVisible;
+      setEdgesHidden(logicEdgeIds, !logicVisible);
+      condBtn.textContent = logicVisible ? 'Hide conditions' : 'Show conditions';
+      condBtn.style.background = logicVisible ? '#e6f4ff' : '#f9f9f9';
+      condBtn.style.borderColor = logicVisible ? '#4b5563' : '#ccc';
+      try { network.redraw(); } catch(e) {}
+    };
+    wrapper.appendChild(condBtn);
+
+    var flowBtn = makeBtn('Show question order');
+    flowBtn.onclick = function() {
+      flowVisible = !flowVisible;
+      selectionRevealedFlowIds = [];
+      setEdgesHidden(flowEdgeIds, !flowVisible);
+      // Keep dashed edges on top when solid edges become visible
+      if (flowVisible) bumpLogicEdgesOnTop();
+      flowBtn.textContent = flowVisible ? 'Hide question order' : 'Show question order';
+      flowBtn.style.background = flowVisible ? '#e6f4ff' : '#f9f9f9';
+      flowBtn.style.borderColor = flowVisible ? '#4b5563' : '#ccc';
+      try { network.redraw(); } catch(e) {}
+    };
+    wrapper.appendChild(flowBtn);
+
+    var calcVisible = false;
+    var calcRevealedLogicIds = [];
+    var calcBtn = makeBtn('Show calculations');
+    calcBtn.onclick = function() {
+      calcVisible = !calcVisible;
+      var nodeUpdates = [];
+      nodes.forEach(function(n) {
+        if (!n || typeof n.id !== 'string' || !n.id.startsWith('C')) return;
+        nodeUpdates.push({ id: n.id, hidden: !calcVisible });
+      });
+      if (nodeUpdates.length) nodes.update(nodeUpdates);
+      if (calcVisible) {
+        calcRevealedLogicIds = [];
+        edges.forEach(function(e) {
+          if (!e || e.id == null || e.data_kind !== 'logic') return;
+          if (e.hidden !== true) return;
+          var from = String(e.from || ''), to = String(e.to || '');
+          if (from.startsWith('C') || to.startsWith('C')) calcRevealedLogicIds.push(e.id);
+        });
+        setEdgesHidden(calcRevealedLogicIds, false);
+      } else {
+        if (calcRevealedLogicIds.length) {
+          setEdgesHidden(calcRevealedLogicIds, true);
+          calcRevealedLogicIds = [];
+        }
+      }
+      calcBtn.textContent = calcVisible ? 'Hide calculations' : 'Show calculations';
+      calcBtn.style.background = calcVisible ? '#e6f4ff' : '#f9f9f9';
+      calcBtn.style.borderColor = calcVisible ? '#4b5563' : '#ccc';
+      try { network.redraw(); } catch(e) {}
+    };
+    wrapper.appendChild(calcBtn);
+
+    if (legendTitle) {
+      panel.insertBefore(wrapper, legendTitle);
+    } else {
+      panel.appendChild(wrapper);
+    }
+    return true;
+  }
+
+  var attempts = 0;
+  var timer = setInterval(function() {
+    attempts++;
+    if (addButtons() || attempts > 40) clearInterval(timer);
+  }, 100);
+})();
+</script>
+
+</body>
+</html>
