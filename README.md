@@ -1,2 +1,2 @@
 # general
-For entertainment only
+
